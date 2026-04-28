@@ -372,21 +372,11 @@
 
     log(`Consultando Datajud: ${proc.cliente}...`, 'info');
 
-    const endpoint = TRIBUNAIS_ENDPOINT[proc.tribunal] || 'api_publica_tjgo';
-    const url = `https://api-publica.datajud.cnj.jus.br/${endpoint}/_search`;
-
     try {
-      const res = await fetch(url, {
+      const res = await fetch('/api/datajud', {
         method: 'POST',
-        headers: {
-          'Authorization': `APIKey ${DATAJUD_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: {
-            match: { numeroProcesso: proc.cnj.replace(/[.\-]/g, '') }
-          }
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tribunal: proc.tribunal, numero: proc.cnj }),
       });
 
       const data = await res.json();
