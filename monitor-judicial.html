@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Souza & Santos — Monitor Judicial</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #0f1117; color: #e8eaf0; min-height: 100vh; }
+
+    .topbar { background: #1a1c20; border-bottom: 1px solid #2a2d35; padding: 14px 28px; display: flex; align-items: center; gap: 14px; }
+    .logo { font-size: 18px; font-weight: 800; color: white; letter-spacing: 0.04em; }
+    .logo span { color: #c0392b; }
+    .badge-online { background: #27ae6022; border: 1px solid #27ae6066; color: #2ecc71; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 700; }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 28px 20px; }
+
+    .section-title { color: #c0392b; font-size: 10px; letter-spacing: 0.14em; font-weight: 700; margin-bottom: 4px; }
+    h2 { color: white; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .subtitle { color: #7a8299; font-size: 13px; margin-bottom: 24px; }
+
+    .card { background: #1a1c20; border: 1px solid #2a2d35; border-radius: 12px; padding: 22px; margin-bottom: 16px; }
+    .card-title { font-size: 14px; font-weight: 700; color: white; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    label { display: block; font-size: 10px; font-weight: 700; color: #7a8299; letter-spacing: 0.1em; margin-bottom: 5px; }
+    input, select { width: 100%; padding: 9px 12px; background: #0f1117; border: 1px solid #2a2d35; border-radius: 7px; color: #e8eaf0; font-size: 13px; outline: none; }
+    input:focus, select:focus { border-color: #c0392b66; }
+    input[readonly] { color: #4a5068; }
+
+    .btn { padding: 10px 20px; border: none; border-radius: 7px; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.04em; }
+    .btn-red { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; width: 100%; padding: 12px; }
+    .btn-red:hover { opacity: 0.9; }
+    .btn-gray { background: transparent; border: 1px solid #2a2d35; color: #7a8299; }
+    .btn-gray:hover { border-color: #c0392b66; color: #e74c3c; }
+    .btn-green { background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; }
+    .btn-sm { padding: 5px 12px; font-size: 11px; border-radius: 5px; }
+
+    .stat-card { background: #0f1117; border: 1px solid #2a2d35; border-radius: 10px; padding: 16px; }
+    .stat-val { font-size: 28px; font-weight: 800; line-height: 1; }
+    .stat-label { color: #4a5068; font-size: 10px; letter-spacing: 0.1em; margin-top: 6px; }
+
+    .processo-item { background: #0f1117; border: 1px solid #2a2d35; border-radius: 10px; padding: 14px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .processo-nome { font-size: 14px; font-weight: 700; color: white; }
+    .processo-cnj { font-family: monospace; font-size: 11px; color: #4a5068; margin-top: 3px; }
+    .processo-info { font-size: 11px; color: #7a8299; margin-top: 3px; }
+
+    .mov-item { padding: 12px 0; border-bottom: 1px solid #2a2d35; display: flex; gap: 14px; align-items: flex-start; }
+    .mov-item:last-child { border-bottom: none; }
+    .mov-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+    .mov-tipo { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; }
+    .mov-desc { font-size: 13px; color: #b0b8c4; margin-top: 3px; line-height: 1.5; }
+    .mov-data { font-size: 10px; color: #4a5068; margin-top: 3px; }
+    .badge-novo { background: #d4ac0d22; border: 1px solid #d4ac0d66; color: #f1c40f; font-size: 9px; padding: 2px 7px; border-radius: 10px; font-weight: 700; margin-left: 6px; }
+
+    .alert { padding: 12px 16px; border-radius: 8px; font-size: 13px; margin-top: 12px; }
+    .alert-success { background: #27ae6018; border: 1px solid #27ae6044; color: #2ecc71; }
+    .alert-error { background: #c0392b18; border: 1px solid #c0392b44; color: #e74c3c; }
+    .alert-info { background: #2980b918; border: 1px solid #2980b944; color: #3498db; }
+    .alert-warn { background: #d4ac0d18; border: 1px solid #d4ac0d44; color: #f1c40f; }
+
+    .tag { display: inline-block; padding: 2px 9px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+    .tag-green { background: #27ae6022; color: #2ecc71; border: 1px solid #27ae6044; }
+    .tag-red { background: #c0392b22; color: #e74c3c; border: 1px solid #c0392b44; }
+    .tag-amber { background: #d4ac0d22; color: #f1c40f; border: 1px solid #d4ac0d44; }
+    .tag-gray { background: #4a506822; color: #7a8299; border: 1px solid #4a506844; }
+
+    .loading { display: inline-block; width: 14px; height: 14px; border: 2px solid #2a2d35; border-top-color: #c0392b; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 6px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .monitor-status { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #7a8299; }
+    .pulse { width: 8px; height: 8px; border-radius: 50%; background: #27ae60; animation: pulse 2s infinite; }
+    .pulse.off { background: #4a5068; animation: none; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    .empty { text-align: center; padding: 32px; color: #4a5068; font-size: 13px; }
+    hr { border: none; border-top: 1px solid #2a2d35; margin: 20px 0; }
+
+    #log { font-family: monospace; font-size: 11px; color: #4a5068; max-height: 120px; overflow-y: auto; background: #0f1117; border: 1px solid #2a2d35; border-radius: 7px; padding: 10px; }
+    .log-line { margin-bottom: 3px; }
+    .log-ok { color: #27ae60; }
+    .log-err { color: #e74c3c; }
+    .log-info { color: #3498db; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">SOUZA <span>&</span> SANTOS</div>
+  <div style="color:#4a5068; font-size:12px">Advogados Associados</div>
+  <div style="flex:1"></div>
+  <div class="monitor-status">
+    <div class="pulse off" id="pulse-dot"></div>
+    <span id="monitor-label">Monitor pausado</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="section-title">PAINEL DE CONTROLE</div>
+  <h2>Monitor Judicial — WhatsApp</h2>
+  <p class="subtitle">Consulta automática do Datajud e notificação de movimentações no WhatsApp</p>
+
+  <!-- Stats -->
+  <div class="grid3" style="margin-bottom:16px">
+    <div class="stat-card">
+      <div class="stat-val" id="stat-processos" style="color:#e74c3c">0</div>
+      <div class="stat-label">PROCESSOS MONITORADOS</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-movs" style="color:#f1c40f">0</div>
+      <div class="stat-label">MOVIMENTAÇÕES HOJE</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-enviados" style="color:#2ecc71">0</div>
+      <div class="stat-label">ALERTAS ENVIADOS</div>
+    </div>
+  </div>
+
+  <!-- Config Z-API -->
+  <div class="card">
+    <div class="card-title">⚙️ Configurações</div>
+    <div class="grid2" style="margin-bottom:12px">
+      <div>
+        <label>INSTANCE ID (Z-API)</label>
+        <input id="cfg-instance" value="3F255E73D6507273147562108CBB360D" readonly/>
+      </div>
+      <div>
+        <label>TOKEN (Z-API)</label>
+        <input id="cfg-token" value="07E19F24331FA9FEEDFE766F" readonly/>
+      </div>
+      <div>
+        <label>CLIENT-TOKEN (Z-API)</label>
+        <input id="cfg-client" value="Feb7973f832d54410987ac9cfc153a99fS" readonly/>
+      </div>
+      <div>
+        <label>ID DO GRUPO WHATSAPP</label>
+        <input id="cfg-grupo" placeholder="Cole o ID do grupo aqui" value=""/>
+      </div>
+    </div>
+    <div style="font-size:11px; color:#4a5068; margin-bottom:12px">
+      ⚠️ O grupo "Notificação processos" ainda não sincronizou. Cole o ID quando aparecer na lista de grupos, ou use temporariamente o ID do grupo SouzaeSantos Pagamento: <strong style="color:#7a8299; cursor:pointer" onclick="document.getElementById('cfg-grupo').value='120363420454549424-group'">120363420454549424-group</strong> (clique para usar)
+    </div>
+    <button class="btn btn-green btn-sm" onclick="testarWhatsApp()">📤 Testar Envio no Grupo</button>
+    <div id="alert-config"></div>
+  </div>
+
+  <!-- Cadastrar processo -->
+  <div class="card">
+    <div class="card-title">➕ Cadastrar Processo para Monitorar</div>
+    <div class="grid2" style="margin-bottom:12px">
+      <div>
+        <label>NOME DO CLIENTE</label>
+        <input id="novo-cliente" placeholder="Ex: João da Silva"/>
+      </div>
+      <div>
+        <label>NÚMERO CNJ</label>
+        <input id="novo-cnj" placeholder="Ex: 5314891-35.2025.8.09.0010"/>
+      </div>
+      <div>
+        <label>TRIBUNAL</label>
+        <select id="novo-tribunal">
+          <option value="tjgo">TJGO — Tribunal de Justiça de Goiás</option>
+          <option value="trf1">TRF1 — Tribunal Regional Federal 1ª Região</option>
+          <option value="trf2">TRF2 — Tribunal Regional Federal 2ª Região</option>
+          <option value="trf3">TRF3 — Tribunal Regional Federal 3ª Região</option>
+          <option value="trf4">TRF4 — Tribunal Regional Federal 4ª Região</option>
+          <option value="trf5">TRF5 — Tribunal Regional Federal 5ª Região</option>
+          <option value="jfgo">JFGO — Justiça Federal Goiás</option>
+        </select>
+      </div>
+      <div>
+        <label>RESPONSÁVEL</label>
+        <input id="novo-responsavel" placeholder="Ex: Dr. Lucas Ferreira"/>
+      </div>
+    </div>
+    <button class="btn btn-red" onclick="cadastrarProcesso()">+ Adicionar Processo</button>
+    <div id="alert-cadastro"></div>
+  </div>
+
+  <!-- Lista de processos -->
+  <div class="card">
+    <div class="card-title" style="justify-content:space-between">
+      <span>📋 Processos Monitorados</span>
+      <div style="display:flex; gap:8px; align-items:center">
+        <span id="ultima-consulta" style="font-size:11px; color:#4a5068; font-weight:400"></span>
+        <button class="btn btn-gray btn-sm" onclick="consultarTodos()">🔄 Consultar Agora</button>
+        <button class="btn btn-sm" id="btn-monitor" onclick="toggleMonitor()" style="background:#27ae6022; border:1px solid #27ae6044; color:#2ecc71">▶ Iniciar Monitor</button>
+      </div>
+    </div>
+    <div id="lista-processos">
+      <div class="empty">Nenhum processo cadastrado ainda.<br>Adicione um processo acima para começar.</div>
+    </div>
+  </div>
+
+  <!-- Movimentações -->
+  <div class="card" id="card-movs" style="display:none">
+    <div class="card-title">🔔 Movimentações Detectadas</div>
+    <div id="lista-movs"></div>
+  </div>
+
+  <!-- Log -->
+  <div class="card">
+    <div class="card-title">📟 Log do Sistema</div>
+    <div id="log"><div class="log-line log-info">[sistema] Aguardando início...</div></div>
+  </div>
+
+</div>
+
+<script>
+  // ── CONFIG ──────────────────────────────────────────────────
+  const DATAJUD_KEY = 'cDZHYzlZa0JadVREZDJCendQbXY6SkJlTzNjLV9TRENyQk1RdnFKZGRQdw==';
+  const TRIBUNAIS_ENDPOINT = {
+    tjgo: 'api_publica_tjgo',
+    trf1: 'api_publica_trf1',
+    trf2: 'api_publica_trf2',
+    trf3: 'api_publica_trf3',
+    trf4: 'api_publica_trf4',
+    trf5: 'api_publica_trf5',
+    jfgo: 'api_publica_trf1', // JFGO é subseção do TRF1
+  };
+
+  let processos = JSON.parse(localStorage.getItem('processos') || '[]');
+  let movimentacoes = JSON.parse(localStorage.getItem('movimentacoes') || '[]');
+  let monitorInterval = null;
+  let statEnviados = parseInt(localStorage.getItem('stat-enviados') || '0');
+
+  // ── HELPERS ─────────────────────────────────────────────────
+  const cfg = () => ({
+    instance: document.getElementById('cfg-instance').value.trim(),
+    token: document.getElementById('cfg-token').value.trim(),
+    client: document.getElementById('cfg-client').value.trim(),
+    grupo: document.getElementById('cfg-grupo').value.trim(),
+  });
+
+  function salvar() {
+    localStorage.setItem('processos', JSON.stringify(processos));
+    localStorage.setItem('movimentacoes', JSON.stringify(movimentacoes));
+    localStorage.setItem('stat-enviados', statEnviados);
+  }
+
+  function log(msg, tipo = 'info') {
+    const el = document.getElementById('log');
+    const now = new Date().toLocaleTimeString('pt-BR');
+    el.innerHTML += `<div class="log-line log-${tipo}">[${now}] ${msg}</div>`;
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function showAlert(elId, msg, tipo) {
+    const el = document.getElementById(elId);
+    el.innerHTML = `<div class="alert alert-${tipo}" style="margin-top:10px">${msg}</div>`;
+    setTimeout(() => el.innerHTML = '', 5000);
+  }
+
+  function atualizarStats() {
+    document.getElementById('stat-processos').textContent = processos.length;
+    const hoje = new Date().toLocaleDateString('pt-BR');
+    const movsHoje = movimentacoes.filter(m => m.data_deteccao?.startsWith(hoje.split('/').reverse().join('-'))).length;
+    document.getElementById('stat-movs').textContent = movimentacoes.length;
+    document.getElementById('stat-enviados').textContent = statEnviados;
+  }
+
+  // ── RENDERIZAR PROCESSOS ─────────────────────────────────────
+  function renderProcessos() {
+    const el = document.getElementById('lista-processos');
+    if (processos.length === 0) {
+      el.innerHTML = '<div class="empty">Nenhum processo cadastrado ainda.<br>Adicione um processo acima para começar.</div>';
+      return;
+    }
+    el.innerHTML = processos.map(p => {
+      const movsP = movimentacoes.filter(m => m.processo_id === p.id);
+      const novas = movsP.filter(m => !m.notificado).length;
+      return `
+        <div class="processo-item">
+          <div>
+            <div class="processo-nome">${p.cliente}</div>
+            <div class="processo-cnj">${p.cnj}</div>
+            <div class="processo-info">${p.tribunal.toUpperCase()} · ${p.responsavel} · ${movsP.length} movimentação(ões)</div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center">
+            ${novas > 0 ? `<span class="tag tag-amber">🔔 ${novas} nova(s)</span>` : '<span class="tag tag-green">✓ Em dia</span>'}
+            <button class="btn btn-gray btn-sm" onclick="consultarProcesso('${p.id}')">🔍 Consultar</button>
+            <button class="btn btn-sm" style="background:#c0392b22;border:1px solid #c0392b44;color:#e74c3c" onclick="removerProcesso('${p.id}')">✕</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    atualizarStats();
+  }
+
+  // ── RENDERIZAR MOVIMENTAÇÕES ─────────────────────────────────
+  function renderMovimentacoes() {
+    const el = document.getElementById('lista-movs');
+    const card = document.getElementById('card-movs');
+
+    if (movimentacoes.length === 0) {
+      card.style.display = 'none';
+      return;
+    }
+
+    card.style.display = 'block';
+    const sorted = [...movimentacoes].sort((a, b) => new Date(b.data) - new Date(a.data));
+
+    el.innerHTML = sorted.map(m => {
+      const proc = processos.find(p => p.id === m.processo_id);
+      const cores = {
+        despacho: '#3498db', intimacao: '#f1c40f', sentenca: '#2ecc71',
+        peticao: '#7a8299', laudo: '#27ae60', pericia: '#d4ac0d', distribuicao: '#9b59b6'
+      };
+      const cor = cores[m.tipo] || '#7a8299';
+      return `
+        <div class="mov-item">
+          <div class="mov-dot" style="background:${cor}"></div>
+          <div style="flex:1">
+            <div style="display:flex; align-items:center; gap:6px">
+              <span class="mov-tipo" style="color:${cor}">${(m.tipo || 'movimentação').toUpperCase()}</span>
+              ${!m.notificado ? '<span class="badge-novo">NOVO</span>' : ''}
+              <span style="font-size:10px; color:#4a5068; margin-left:auto">${m.data_formatada || m.data}</span>
+            </div>
+            <div class="mov-desc">${m.descricao}</div>
+            <div class="mov-data">${proc ? proc.cliente + ' · ' + proc.cnj : ''}</div>
+          </div>
+          ${!m.notificado ? `<button class="btn btn-green btn-sm" onclick="enviarMovimentacao('${m.id}')">📤 Notificar</button>` : '<span class="tag tag-green" style="font-size:9px">✓ Enviado</span>'}
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ── CADASTRAR PROCESSO ───────────────────────────────────────
+  function cadastrarProcesso() {
+    const cliente = document.getElementById('novo-cliente').value.trim();
+    const cnj = document.getElementById('novo-cnj').value.trim();
+    const tribunal = document.getElementById('novo-tribunal').value;
+    const responsavel = document.getElementById('novo-responsavel').value.trim();
+
+    if (!cliente || !cnj) {
+      showAlert('alert-cadastro', '⚠️ Preencha o nome do cliente e o número CNJ.', 'warn');
+      return;
+    }
+
+    const proc = {
+      id: Date.now().toString(),
+      cliente, cnj, tribunal, responsavel,
+      cadastrado: new Date().toISOString(),
+    };
+
+    processos.push(proc);
+    salvar();
+    renderProcessos();
+    log(`Processo cadastrado: ${cliente} — ${cnj}`, 'ok');
+    showAlert('alert-cadastro', `✅ Processo de ${cliente} cadastrado com sucesso!`, 'success');
+
+    document.getElementById('novo-cliente').value = '';
+    document.getElementById('novo-cnj').value = '';
+    document.getElementById('novo-responsavel').value = '';
+  }
+
+  function removerProcesso(id) {
+    processos = processos.filter(p => p.id !== id);
+    movimentacoes = movimentacoes.filter(m => m.processo_id !== id);
+    salvar();
+    renderProcessos();
+    renderMovimentacoes();
+    log('Processo removido.', 'info');
+  }
+
+  // ── CONSULTAR DATAJUD ────────────────────────────────────────
+  async function consultarProcesso(id) {
+    const proc = processos.find(p => p.id === id);
+    if (!proc) return;
+
+    log(`Consultando Datajud: ${proc.cliente}...`, 'info');
+
+    const endpoint = TRIBUNAIS_ENDPOINT[proc.tribunal] || 'api_publica_tjgo';
+    const url = `https://api-publica.datajud.cnj.jus.br/${endpoint}/_search`;
+
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `APIKey ${DATAJUD_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: {
+            match: { numeroProcesso: proc.cnj.replace(/[.\-]/g, '') }
+          }
+        }),
+      });
+
+      const data = await res.json();
+      const hits = data?.hits?.hits || [];
+
+      if (hits.length === 0) {
+        log(`Nenhum resultado para ${proc.cnj} — processo pode estar em outro tribunal ou número incorreto.`, 'err');
+        return;
+      }
+
+      const processo = hits[0]._source;
+      const movs = processo.movimentos || [];
+
+      log(`${movs.length} movimentação(ões) encontrada(s) para ${proc.cliente}.`, 'ok');
+
+      let novas = 0;
+      movs.forEach(mov => {
+        const movId = `${id}_${mov.dataHora || mov.data}_${mov.codigo}`;
+        const jaExiste = movimentacoes.find(m => m.id === movId);
+        if (!jaExiste) {
+          const novaMovimentacao = {
+            id: movId,
+            processo_id: id,
+            data: mov.dataHora || mov.data || new Date().toISOString(),
+            data_formatada: mov.dataHora ? new Date(mov.dataHora).toLocaleString('pt-BR') : mov.data,
+            tipo: detectarTipo(mov.nome || mov.descricao || ''),
+            descricao: mov.nome || mov.descricao || 'Movimentação registrada',
+            notificado: false,
+            data_deteccao: new Date().toISOString(),
+          };
+          movimentacoes.push(novaMovimentacao);
+          novas++;
+        }
+      });
+
+      if (novas > 0) {
+        log(`🔔 ${novas} nova(s) movimentação(ões) detectada(s) para ${proc.cliente}!`, 'ok');
+        salvar();
+        renderMovimentacoes();
+        renderProcessos();
+
+        // Envia automaticamente se grupo configurado
+        if (cfg().grupo) {
+          const novasMov = movimentacoes.filter(m => m.processo_id === id && !m.notificado);
+          for (const mov of novasMov) {
+            await enviarMovimentacao(mov.id);
+          }
+        }
+      } else {
+        log(`Sem novas movimentações para ${proc.cliente}.`, 'info');
+        document.getElementById('ultima-consulta').textContent = `Última consulta: ${new Date().toLocaleTimeString('pt-BR')}`;
+      }
+
+    } catch (err) {
+      log(`Erro ao consultar Datajud: ${err.message}`, 'err');
+    }
+  }
+
+  function detectarTipo(texto) {
+    const t = texto.toLowerCase();
+    if (t.includes('intima')) return 'intimacao';
+    if (t.includes('sentença') || t.includes('sentenca') || t.includes('acórdão')) return 'sentenca';
+    if (t.includes('perícia') || t.includes('pericia')) return 'pericia';
+    if (t.includes('laudo')) return 'laudo';
+    if (t.includes('petição') || t.includes('peticao')) return 'peticao';
+    if (t.includes('distribu')) return 'distribuicao';
+    if (t.includes('despacho') || t.includes('concluso') || t.includes('decisão')) return 'despacho';
+    return 'despacho';
+  }
+
+  async function consultarTodos() {
+    if (processos.length === 0) {
+      log('Nenhum processo para consultar.', 'info');
+      return;
+    }
+    log(`Iniciando consulta de ${processos.length} processo(s)...`, 'info');
+    for (const proc of processos) {
+      await consultarProcesso(proc.id);
+      await new Promise(r => setTimeout(r, 1500)); // respeita rate limit
+    }
+    document.getElementById('ultima-consulta').textContent = `Última consulta: ${new Date().toLocaleTimeString('pt-BR')}`;
+    log('Consulta concluída.', 'ok');
+  }
+
+  // ── MONITOR AUTOMÁTICO ───────────────────────────────────────
+  function toggleMonitor() {
+    const btn = document.getElementById('btn-monitor');
+    const dot = document.getElementById('pulse-dot');
+    const label = document.getElementById('monitor-label');
+
+    if (monitorInterval) {
+      clearInterval(monitorInterval);
+      monitorInterval = null;
+      btn.textContent = '▶ Iniciar Monitor';
+      btn.style.color = '#2ecc71';
+      dot.classList.add('off');
+      label.textContent = 'Monitor pausado';
+      log('Monitor automático pausado.', 'info');
+    } else {
+      monitorInterval = setInterval(consultarTodos, 6 * 60 * 60 * 1000); // 6 horas
+      btn.textContent = '⏸ Pausar Monitor';
+      btn.style.color = '#f1c40f';
+      dot.classList.remove('off');
+      label.textContent = 'Monitor ativo — consulta a cada 6h';
+      log('Monitor automático iniciado! Consultará o Datajud a cada 6 horas.', 'ok');
+      consultarTodos(); // consulta imediata
+    }
+  }
+
+  // ── ENVIAR WHATSAPP ──────────────────────────────────────────
+  async function enviarMovimentacao(movId) {
+    const mov = movimentacoes.find(m => m.id === movId);
+    if (!mov) return;
+
+    const proc = processos.find(p => p.id === mov.processo_id);
+    const { instance, token, client, grupo } = cfg();
+
+    if (!grupo) {
+      log('Configure o ID do grupo WhatsApp antes de enviar.', 'err');
+      return;
+    }
+
+    const tipos = {
+      despacho: '📋 Despacho', intimacao: '⚠️ Intimação', sentenca: '⚖️ Sentença',
+      peticao: '📄 Petição', laudo: '🔬 Laudo', pericia: '🏥 Perícia', distribuicao: '📬 Distribuição'
+    };
+
+    const mensagem =
+`⚖️ *SOUZA & SANTOS ADVOGADOS*
+━━━━━━━━━━━━━━━━━━━━━
+🔔 *NOVA MOVIMENTAÇÃO JUDICIAL*
+
+👤 *Cliente:* ${proc?.cliente || 'N/A'}
+📋 *Processo:* ${proc?.cnj || 'N/A'}
+🏛️ *Tribunal:* ${proc?.tribunal?.toUpperCase() || 'N/A'}
+👨‍⚖️ *Responsável:* ${proc?.responsavel || 'N/A'}
+
+${tipos[mov.tipo] || '📌 Movimentação'}
+📅 *Data:* ${mov.data_formatada || mov.data}
+
+📝 *Descrição:*
+${mov.descricao}
+━━━━━━━━━━━━━━━━━━━━━
+_Sistema automático de monitoramento_`;
+
+    try {
+      const res = await fetch(
+        `https://api.z-api.io/instances/${instance}/token/${token}/send-text`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Client-Token': client },
+          body: JSON.stringify({ phone: grupo, message: mensagem }),
+        }
+      );
+      const data = await res.json();
+
+      if (data.zaapId || data.messageId || data.id) {
+        mov.notificado = true;
+        statEnviados++;
+        salvar();
+        renderMovimentacoes();
+        atualizarStats();
+        log(`✅ Notificação enviada no WhatsApp para: ${proc?.cliente}`, 'ok');
+      } else {
+        log(`Erro ao enviar WhatsApp: ${JSON.stringify(data)}`, 'err');
+      }
+    } catch (err) {
+      log(`Erro de conexão WhatsApp: ${err.message}`, 'err');
+    }
+  }
+
+  async function testarWhatsApp() {
+    const { instance, token, client, grupo } = cfg();
+    if (!grupo) {
+      showAlert('alert-config', '⚠️ Cole o ID do grupo antes de testar.', 'warn');
+      return;
+    }
+
+    const mensagem =
+`⚖️ *SOUZA & SANTOS ADVOGADOS*
+━━━━━━━━━━━━━━━━━━━━━
+✅ *Sistema de monitoramento configurado!*
+
+O sistema está pronto para monitorar seus processos no Datajud e enviar notificações automáticas neste grupo.
+
+📅 ${new Date().toLocaleString('pt-BR')}
+━━━━━━━━━━━━━━━━━━━━━
+_Sistema automático de monitoramento_`;
+
+    try {
+      const res = await fetch(
+        `https://api.z-api.io/instances/${instance}/token/${token}/send-text`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Client-Token': client },
+          body: JSON.stringify({ phone: grupo, message: mensagem }),
+        }
+      );
+      const data = await res.json();
+      if (data.zaapId || data.messageId || data.id) {
+        showAlert('alert-config', '✅ Mensagem enviada! Verifique o grupo no WhatsApp.', 'success');
+        log('Teste de WhatsApp enviado com sucesso!', 'ok');
+      } else {
+        showAlert('alert-config', `❌ Erro: ${JSON.stringify(data)}`, 'error');
+      }
+    } catch (err) {
+      showAlert('alert-config', `❌ Erro: ${err.message}`, 'error');
+    }
+  }
+
+  // ── INIT ─────────────────────────────────────────────────────
+  renderProcessos();
+  renderMovimentacoes();
+  atualizarStats();
+  log('Sistema iniciado. Configure o grupo e adicione processos para monitorar.', 'info');
+
+  // Pré-preenche o processo de teste
+  document.getElementById('novo-cliente').value = '';
+  document.getElementById('novo-cnj').value = '5314891-35.2025.8.09.0010';
+  document.getElementById('novo-responsavel').value = 'Dr. Lucas Ferreira';
+</script>
+</body>
+</html>
